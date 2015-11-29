@@ -12,11 +12,17 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "DB.db";
 
-    private static final String TABLE_tblAccount = "tblAccount";
+
+    private static final String CREATE_tblMaster_TABLE = "CREATE TABLE IF NOT EXISTS tblMaster ( " +
+            "masterIdx INTEGER PRIMARY KEY, " +
+            "pw TEXT )";
 
     private static final String CREATE_tblAccount_TABLE = "CREATE TABLE IF NOT EXISTS tblAccount ( " +
-            "accountIdx INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "pw TEXT )";
+            "accountIdx INTEGER PRIMARY KEY, " +
+            "siteName TEXT, " +
+            "url TEXT, " +
+            "id TEXT, " +
+            "pw Text)";
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -24,20 +30,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(CREATE_tblMaster_TABLE);
         db.execSQL(CREATE_tblAccount_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-    }
-
-    public void insertTblAccount(String pw){
-        String query = "INSERT INTO " + TABLE_tblAccount + " (pw) VALUES ('" + pw + "')";
-
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        db.execSQL(query);
-        db.close();
     }
 }

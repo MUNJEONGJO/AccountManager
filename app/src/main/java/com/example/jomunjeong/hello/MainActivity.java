@@ -1,17 +1,23 @@
 package com.example.jomunjeong.hello;
 
 import android.content.Intent;
-import android.net.Uri;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private List<Account> accounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +25,35 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setupToolbar();
+
+        RecyclerView rv = (RecyclerView)findViewById(R.id.rv);
+        //rv.setHasFixedSize(true);
+
+
+        accounts = new ArrayList<>();
+
+        SQLiteHandler handler = SQLiteHandler.open(getApplicationContext());
+        // 데이터 검색
+        Cursor c = handler.select_Account();
+        while(c.moveToNext()) {
+            Account account = new Account();
+            account.siteName = c.getString(c.getColumnIndex("siteName"));
+            account.url = c.getString(c.getColumnIndex("url"));
+            account.id = c.getString(c.getColumnIndex("id"));
+            account.pw = c.getString(c.getColumnIndex("pw"));
+            accounts.add(account);
+        }//end while
+
+        handler.close();
+
+        if(accounts != null){
+
+            //accounts = Account.initializeData();
+            RVAdapter adapter = new RVAdapter(accounts);
+            rv.setAdapter(adapter);
+            rv.setLayoutManager(new LinearLayoutManager(this));
+
+        }
 
     }
 
@@ -31,26 +66,13 @@ public class MainActivity extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
     }
 
-    public void onButton1Clicked(View v){
 
-        Toast.makeText(getApplicationContext(), "버튼이 눌렸어요.", Toast.LENGTH_LONG).show();
+    public void onFloatingActionButtonClicked(View v){
 
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://m.naver.com"));
+        //Toast.makeText(getApplicationContext(), "버튼이 눌렸어요.", Toast.LENGTH_LONG).show();
 
-        startActivity(intent);
-    }
-
-    public void onButton2Clicked(View v){
-
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-8415-5236"));
-
-        startActivity(intent);
-    }
-
-    public void onButton3Clicked(View v){
-
-
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+        //Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://m.naver.com"));
+        Intent intent = new Intent(getApplicationContext(), AddAccountActivity.class);
 
         startActivity(intent);
     }
